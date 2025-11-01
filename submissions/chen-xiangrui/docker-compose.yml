@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Banking API Server
+  banking-server:
+    image: singhacksbjb/sidequest-server:latest
+    container_name: banking-server
+    ports:
+      - "8123:8123"
+    networks:
+      - banking-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8123/accounts"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Modern Banking Client
+  banking-client:
+    build: .
+    container_name: banking-client
+    depends_on:
+      banking-server:
+        condition: service_healthy
+    environment:
+      - BANKING_API_URL=http://banking-server:8123
+      - LOG_LEVEL=INFO
+    networks:
+      - banking-network
+    # Default command - can be overridden
+    command: ["--from", "ACC1000", "--to", "ACC1001", "--amount", "100", "--auth", "--validate"]
+
+networks:
+  banking-network:
+    driver: bridge

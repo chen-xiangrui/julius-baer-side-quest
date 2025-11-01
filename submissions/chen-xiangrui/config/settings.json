@@ -1,0 +1,6 @@
+{
+  "base_url": "http://localhost:8123",
+  "timeout": 30,
+  "max_retries": 3,
+  "log_level": "INFO"
+}
